@@ -1,0 +1,82 @@
+
+> odoo-hackathon@0.1.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/enerhim/Programming/odoo-hackathon[39m
+
+[90mstdout[2m | tests/asset.test.ts
+[22m[39m✅ Test database connected
+
+[90mstdout[2m | tests/maintenance.test.ts
+[22m[39m✅ Test database connected
+
+[90mstdout[2m | tests/booking.test.ts
+[22m[39m✅ Test database connected
+
+[90mstdout[2m | tests/auth.test.ts
+[22m[39m✅ Test database connected
+
+[90mstdout[2m | tests/asset.test.ts[2m > [22m[2mAsset Management[2m > [22m[2mAsset CRUD[2m > [22m[2mshould enforce unique asset tags
+[22m[39mprisma:error 
+Invalid `prisma.asset.create()` invocation in
+/home/enerhim/Programming/odoo-hackathon/tests/asset.test.ts:105:22
+
+  102 });
+  103 
+  104 await expect(
+→ 105   prisma.asset.create(
+Unique constraint failed on the fields: (`"assetTag"`)
+
+ [32m✓[39m tests/booking.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 263[2mms[22m[39m
+ [32m✓[39m tests/maintenance.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 264[2mms[22m[39m
+[90mstdout[2m | tests/auth.test.ts[2m > [22m[2mAuthentication Layer[2m > [22m[2mUser Registration[2m > [22m[2mshould prevent duplicate email registration
+[22m[39mprisma:error 
+Invalid `prisma.user.create()` invocation in
+/home/enerhim/Programming/odoo-hackathon/tests/auth.test.ts:72:21
+
+  69 
+  70 it("should prevent duplicate email registration", async () => {
+  71   await expect(
+→ 72     prisma.user.create(
+Unique constraint failed on the fields: (`email`)
+
+ [32m✓[39m tests/asset.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 381[2mms[22m[39m
+[90mstdout[2m | tests/auth.test.ts[2m > [22m[2mAuthentication Layer[2m > [22m[2mSession Management[2m > [22m[2mshould enforce unique session tokens
+[22m[39mprisma:error 
+Invalid `prisma.session.create()` invocation in
+/home/enerhim/Programming/odoo-hackathon/tests/auth.test.ts:118:24
+
+  115 
+  116 it("should enforce unique session tokens", async () => {
+  117   await expect(
+→ 118     prisma.session.create(
+Unique constraint failed on the fields: (`token`)
+
+[90mstdout[2m | tests/auth.test.ts[2m > [22m[2mAuthentication Layer[2m > [22m[2mRole-Based Access Control[2m > [22m[2mshould validate role enum values
+[22m[39mprisma:error 
+Invalid `prisma.user.update()` invocation in
+/home/enerhim/Programming/odoo-hackathon/tests/auth.test.ts:141:21
+
+  138 
+  139 it("should validate role enum values", async () => {
+  140   await expect(
+→ 141     prisma.user.update({
+            where: {
+              id: "76830832-541d-4c4b-9ea5-79e460fca0f4"
+            },
+            data: {
+              role: "SUPERADMIN"
+                    ~~~~~~~~~~~~
+            }
+          })
+
+Invalid value for argument `role`. Expected Role.
+
+ [32m✓[39m tests/auth.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 422[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[32m26 passed[39m[22m[90m (26)[39m
+[2m   Start at [22m 09:57:08
+[2m   Duration [22m 750ms[2m (transform 202ms, setup 488ms, import 128ms, tests 1.33s, environment 1ms)[22m
+
