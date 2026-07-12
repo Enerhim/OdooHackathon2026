@@ -62,6 +62,14 @@ Every server action is wrapped in a `try/catch` and returns a standard object fo
 | `createDepartment(data)` | `ADMIN` | Creates a new department. |
 | `updateDepartment(id, data)` | `ADMIN` | Updates department fields. |
 
+#### `category.actions.ts` (Asset Category Management)
+| Function | Required Roles | Description |
+|---|---|---|
+| `getCategories()` | *Authenticated* | Lists all asset categories with asset counts. |
+| `getCategoryById(id)` | *Authenticated* | Retrieves a specific category by its ID. |
+| `createCategory(data)` | `ADMIN` | Creates a new asset category with an optional custom field schema. |
+| `updateCategory(id, data)` | `ADMIN` | Updates an existing asset category. |
+
 #### `asset.actions.ts` (Asset Management)
 | Function | Required Roles | Description |
 |---|---|---|
@@ -121,7 +129,9 @@ Every server action is wrapped in a `try/catch` and returns a standard object fo
 | `markAsRead(id)` | Marks a single notification as read. |
 | `markAllAsRead()` | Marks all user notifications as read. |
 | `getUnreadCount()` | Gets the count of unread notifications for badges. |
-| `getDashboardStats()` | Gets high-level KPIs (Available Assets, Overdue Returns, Pending Transfers, etc.). |
+| `checkOverdueAllocations()` | Cron handler to check and trigger notifications for overdue allocations. |
+| `getDashboardStats()` | Gets high-level KPIs (Available Assets, Overdue Returns, Upcoming Returns, Pending Transfers, etc.). |
+| `getUpcomingReturns()` | Gets active allocations where expected return date is in the future. |
 
 ---
 

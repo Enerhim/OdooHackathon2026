@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { requireSession, requireRole } from "@/lib/auth-utils";
 import type { MaintenancePriority, MaintenanceStatus } from "@prisma/client";
+import { createNotification } from "./notification.actions";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -78,6 +79,7 @@ export async function approveMaintenanceRequest(
           status: "APPROVED",
           approvedById: userId,
         },
+        include: { asset: true },
       });
 
       await tx.asset.update({
@@ -96,6 +98,15 @@ export async function approveMaintenanceRequest(
         entityId: id,
         metadata: { assetId: result.assetId },
       },
+    });
+
+    await createNotification({
+      userId: result.raisedById,
+      type: "MAINTENANCE_APPROVED",
+      title: "Maintenance Request Approved",
+      message: `Your maintenance request for asset ${result.asset.name} has been approved.`,
+      relatedEntityType: "MaintenanceRequest",
+      relatedEntityId: result.id,
     });
 
     return { success: true, data: result };
@@ -121,6 +132,7 @@ export async function rejectMaintenanceRequest(
     const request = await db.maintenanceRequest.update({
       where: { id },
       data: { status: "REJECTED" },
+      include: { asset: true },
     });
 
     await db.activityLog.create({
@@ -131,6 +143,15 @@ export async function rejectMaintenanceRequest(
         entityId: id,
         metadata: { assetId: request.assetId, reason: reason ?? null },
       },
+    });
+
+    await createNotification({
+      userId: request.raisedById,
+      type: "MAINTENANCE_REJECTED",
+      title: "Maintenance Request Rejected",
+      message: `Your maintenance request for asset ${request.asset.name} has been rejected.`,
+      relatedEntityType: "MaintenanceRequest",
+      relatedEntityId: request.id,
     });
 
     return { success: true, data: request };

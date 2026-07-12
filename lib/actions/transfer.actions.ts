@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { requireSession, requireRole } from "@/lib/auth-utils";
 import type { TransferStatus } from "@prisma/client";
+import { createNotification } from "./notification.actions";
 
 export async function createTransferRequest(data: {
   assetId: string;
@@ -63,6 +64,7 @@ export async function approveTransfer(id: string) {
         approvedById: session.user.id,
         approvedAt: new Date(),
       },
+      include: { asset: true },
     });
 
     await db.activityLog.create({
@@ -72,6 +74,15 @@ export async function approveTransfer(id: string) {
         entityType: "TransferRequest",
         entityId: transfer.id,
       },
+    });
+
+    await createNotification({
+      userId: transfer.requestedById,
+      type: "TRANSFER_APPROVED",
+      title: "Transfer Request Approved",
+      message: `Your transfer request for asset ${transfer.asset.name} has been approved.`,
+      relatedEntityType: "TransferRequest",
+      relatedEntityId: transfer.id,
     });
 
     return { success: true, data: transfer };
@@ -90,6 +101,7 @@ export async function rejectTransfer(id: string, reason?: string) {
         status: "REJECTED",
         notes: reason,
       },
+      include: { asset: true },
     });
 
     await db.activityLog.create({
@@ -99,6 +111,15 @@ export async function rejectTransfer(id: string, reason?: string) {
         entityType: "TransferRequest",
         entityId: transfer.id,
       },
+    });
+
+    await createNotification({
+      userId: transfer.requestedById,
+      type: "TRANSFER_REJECTED",
+      title: "Transfer Request Rejected",
+      message: `Your transfer request for asset ${transfer.asset.name} has been rejected.`,
+      relatedEntityType: "TransferRequest",
+      relatedEntityId: transfer.id,
     });
 
     return { success: true, data: transfer };

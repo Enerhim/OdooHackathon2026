@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { requireSession, requireRole } from "@/lib/auth-utils";
 import type { Role } from "@prisma/client";
+import { createNotification } from "./notification.actions";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -110,6 +111,15 @@ export async function createBooking(data: {
       },
     });
 
+    await createNotification({
+      userId,
+      type: "BOOKING_CONFIRMED",
+      title: "Booking Confirmed",
+      message: `Your booking for resource ${booking.asset.name} from ${data.startTime.toLocaleString()} to ${data.endTime.toLocaleString()} is confirmed.`,
+      relatedEntityType: "ResourceBooking",
+      relatedEntityId: booking.id,
+    });
+
     return { success: true, data: booking };
   } catch (error) {
     const message =
@@ -176,6 +186,15 @@ export async function cancelBooking(id: string): Promise<ActionResult> {
           cancelledByOwner: isOwner,
         },
       },
+    });
+
+    await createNotification({
+      userId,
+      type: "BOOKING_CANCELLED",
+      title: "Booking Cancelled",
+      message: `Your booking for resource ${updatedBooking.asset.name} on ${updatedBooking.startTime.toLocaleString()} has been cancelled.`,
+      relatedEntityType: "ResourceBooking",
+      relatedEntityId: updatedBooking.id,
     });
 
     return { success: true, data: updatedBooking };
