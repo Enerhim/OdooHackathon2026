@@ -121,7 +121,7 @@ export async function checkOverdueAllocations() {
       if (alloc.employeeId) {
         await createNotification({
           userId: alloc.employeeId,
-          type: "SYSTEM_ALERT",
+          type: "BOOKING_REMINDER",
           title: "Asset Return Overdue",
           message: `Your allocation for asset ${alloc.asset.name} is overdue. Expected return date was ${alloc.expectedReturnDate?.toLocaleDateString()}.`,
           relatedEntityType: "AssetAllocation",

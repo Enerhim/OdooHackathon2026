@@ -217,6 +217,59 @@ async function main() {
     `✅ Sample employees created: ${employees.map((e) => e.name).join(", ")}`
   );
 
+  // --- 5. Create Lots of Dummy Data ---
+  const firstNames = ["Arjun", "Neha", "Rahul", "Pooja", "Amit", "Sneha", "Karan", "Riya", "Aditya", "Kavya", "Siddharth", "Tara"];
+  const lastNames = ["Sharma", "Gupta", "Mehta", "Jain", "Deshmukh", "Reddy", "Nair", "Iyer", "Das", "Bose", "Menon", "Bhat"];
+  const roles = ["EMPLOYEE", "ASSET_MANAGER", "DEPARTMENT_HEAD"];
+  const depts = ["dept-it", "dept-hr", "dept-ops", "dept-finance"];
+  
+  for (let i = 0; i < 20; i++) {
+    const fn = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const ln = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const email = `${fn.toLowerCase()}.${ln.toLowerCase()}${i}@example.com`;
+    
+    await prisma.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        name: `${fn} ${ln}`,
+        email: email,
+        emailVerified: true,
+        role: roles[Math.floor(Math.random() * roles.length)] as any,
+        status: i % 5 === 0 ? "INACTIVE" : "ACTIVE",
+        departmentId: depts[Math.floor(Math.random() * depts.length)],
+      }
+    });
+  }
+
+  const categoryIds = categories.map(c => c.id);
+  const conditions = ["NEW", "GOOD", "FAIR", "POOR", "DAMAGED"];
+  const statuses = ["AVAILABLE", "ALLOCATED", "RESERVED", "UNDER_MAINTENANCE", "LOST", "RETIRED", "DISPOSED"];
+  const assetNames = ["MacBook Pro 16", "Dell XPS 13", "Herman Miller Chair", "Samsung Galaxy S23", "Toyota Innova", "Standing Desk", "Projector", "Conference Table", "Power Drill", "Monitor Stand", "Lenovo ThinkPad", "Ergonomic Mouse", "Whiteboard", "Cisco IP Phone"];
+  
+  for (let i = 0; i < 30; i++) {
+    const tag = `AST-${1000 + i}`;
+    const name = assetNames[Math.floor(Math.random() * assetNames.length)];
+    const cat = categoryIds[Math.floor(Math.random() * categoryIds.length)];
+    
+    await prisma.asset.upsert({
+      where: { assetTag: tag },
+      update: {},
+      create: {
+        assetTag: tag,
+        name: `${name} - ${i + 1}`,
+        categoryId: cat,
+        serialNumber: `SN-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        acquisitionDate: new Date(Date.now() - Math.random() * 100000000000), // Random date in past 3 years roughly
+        acquisitionCost: Math.floor(Math.random() * 3000) + 100,
+        condition: conditions[Math.floor(Math.random() * conditions.length)] as any,
+        status: statuses[Math.floor(Math.random() * statuses.length)] as any,
+        location: i % 3 === 0 ? "Bangalore Office" : "Mumbai HQ",
+      }
+    });
+  }
+
+  console.log("✅ 20 extra employees and 30 extra assets created");
   console.log("\n🎉 Seed completed successfully!");
 }
 

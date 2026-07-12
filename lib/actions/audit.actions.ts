@@ -181,7 +181,7 @@ export async function assignAuditors(
     for (const auditorId of auditorIds) {
       await createNotification({
         userId: auditorId,
-        type: "AUDIT_ASSIGNED",
+        type: "ASSET_ASSIGNED",
         title: "Assigned to Audit Cycle",
         message: `You have been assigned as an auditor for the audit cycle: ${cycle.name}.`,
         relatedEntityType: "AuditCycle",
