@@ -1,4 +1,4 @@
-# Asset Management System (Playdoo Clone)
+# Asset Management System
 
 A comprehensive, enterprise-grade Asset Management System built with **Next.js (App Router)**, **Prisma (PostgreSQL)**, and **BetterAuth**. This application handles the complete lifecycle of organizational assets, from procurement and allocation to maintenance, auditing, and end-of-life.
 
