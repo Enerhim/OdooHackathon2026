@@ -14,6 +14,7 @@ export async function getDashboardStats() {
       activeBookings,
       pendingTransfers,
       overdueReturns,
+      upcomingReturns,
     ] = await Promise.all([
       db.asset.count({ where: { status: "AVAILABLE" } }),
       db.asset.count({ where: { status: "ALLOCATED" } }),
@@ -43,6 +44,13 @@ export async function getDashboardStats() {
           expectedReturnDate: { lt: new Date() },
         },
       }),
+
+      db.assetAllocation.count({
+        where: {
+          status: "ACTIVE",
+          expectedReturnDate: { gte: new Date() },
+        },
+      }),
     ]);
 
     return {
@@ -54,6 +62,7 @@ export async function getDashboardStats() {
         activeBookings,
         pendingTransfers,
         overdueReturns,
+        upcomingReturns,
       },
     };
   } catch (error: any) {
@@ -78,6 +87,28 @@ export async function getOverdueReturns() {
     });
 
     return { success: true, data: overdueAllocations };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}
+
+export async function getUpcomingReturns() {
+  try {
+    await requireSession();
+
+    const upcomingAllocations = await db.assetAllocation.findMany({
+      where: {
+        status: "ACTIVE",
+        expectedReturnDate: { gte: new Date() },
+      },
+      include: {
+        asset: { select: { name: true, assetTag: true } },
+        employee: { select: { name: true, email: true } },
+      },
+      orderBy: { expectedReturnDate: "asc" },
+    });
+
+    return { success: true, data: upcomingAllocations };
   } catch (error: any) {
     return { success: false, error: error.message };
   }

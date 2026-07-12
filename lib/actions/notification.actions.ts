@@ -101,3 +101,38 @@ export async function getUnreadCount() {
     return { success: false, error: error.message };
   }
 }
+
+// Cron handler to check and notify overdue allocations
+export async function checkOverdueAllocations() {
+  try {
+    const overdueAllocations = await db.assetAllocation.findMany({
+      where: {
+        status: "ACTIVE",
+        expectedReturnDate: { lt: new Date() },
+      },
+      include: {
+        asset: true,
+        employee: true,
+      },
+    });
+
+    let notificationsCreated = 0;
+    for (const alloc of overdueAllocations) {
+      if (alloc.employeeId) {
+        await createNotification({
+          userId: alloc.employeeId,
+          type: "SYSTEM_ALERT",
+          title: "Asset Return Overdue",
+          message: `Your allocation for asset ${alloc.asset.name} is overdue. Expected return date was ${alloc.expectedReturnDate?.toLocaleDateString()}.`,
+          relatedEntityType: "AssetAllocation",
+          relatedEntityId: alloc.id,
+        });
+        notificationsCreated++;
+      }
+    }
+
+    return { success: true, data: { checked: overdueAllocations.length, notificationsCreated } };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

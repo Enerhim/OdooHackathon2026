@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Asset Management System (Playdoo Clone)
 
-## Getting Started
+A comprehensive, enterprise-grade Asset Management System built with **Next.js (App Router)**, **Prisma (PostgreSQL)**, and **BetterAuth**. This application handles the complete lifecycle of organizational assets, from procurement and allocation to maintenance, auditing, and end-of-life.
 
-First, run the development server:
+## 🌟 Key Features
+
+### Role-Based Access Control (RBAC)
+- **Superadmin/Admin:** Full system control, department management, and auditing powers.
+- **Asset Manager:** Manage inventory, approve transfers, and handle maintenance ticketing.
+- **Department Head:** Oversee department-specific assets and approve inter-departmental transfers.
+- **Employee:** Request assets, book shared resources, and raise maintenance tickets.
+
+### Asset Lifecycle Management
+- **Inventory Tracking:** Real-time visibility into all hardware and resources.
+- **Allocations:** Assign assets to employees or departments with expected return dates.
+- **Transfers:** Request and approve asset transfers between employees seamlessly.
+- **Maintenance Ticketing:** Report broken assets, track repair statuses, and assign technicians.
+- **Auditing:** Conduct organization-wide or department-specific physical audits with discrepancy tracking.
+
+### Resource Booking
+- Book shared resources (e.g., conference rooms, projectors, company vehicles) using a robust conflict-prevention calendar system.
+
+### Interactive Dashboard
+- Real-time KPIs for available assets, active allocations, pending transfers, maintenance requests, and upcoming/overdue returns.
+- System-wide notifications and activity logs to ensure complete transparency.
+
+---
+
+## 🚀 Getting Started
+
+This project uses **Docker** for the PostgreSQL database and **Node.js** for the frontend/backend server.
+
+### Prerequisites
+
+You will need the following installed on your machine:
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+- [Docker](https://www.docker.com/products/docker-desktop) and Docker Compose
+
+### 🛠️ Installation & Setup
+
+Clone the repository and install dependencies:
+
+```bash
+git clone <repository-url>
+cd odoo-hackathon
+npm install
+```
+
+### 1. Database Setup
+
+You need to run the PostgreSQL database using Docker. The commands vary slightly by operating system.
+
+#### For Linux / macOS
+```bash
+# Start the database container in the background
+sudo docker compose up -d
+```
+
+#### For Windows
+*Note: Ensure Docker Desktop is running.*
+```powershell
+# Start the database container in the background
+docker-compose up -d
+```
+
+### 2. Environment Variables
+
+Create a `.env` file in the root of your project by copying the example file:
+```bash
+cp .env.example .env
+```
+Ensure your `DATABASE_URL` in the `.env` file points to the local Docker database (usually `postgresql://postgres:postgres@localhost:5432/odoo-hackathon?schema=public`).
+
+### 3. Database Migration & Seeding
+
+Once the database is running, push the Prisma schema and seed the initial data:
+
+```bash
+npx prisma db push
+npx prisma db seed
+```
+*(The seed script will populate the database with a default Superadmin, initial departments, categories, and dummy assets for testing).*
+
+### 4. Run the Development Server
+
+Start the Next.js development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🧪 Testing
 
-## Learn More
+The project uses [Vitest](https://vitest.dev/) for unit and integration testing.
 
-To learn more about Next.js, take a look at the following resources:
+To run the test suite:
+```bash
+npm run test
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+*Note: The tests connect to the database. Ensure your Docker container is running before executing tests.*
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📚 Documentation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For a deep dive into the architecture, please refer to the documentation:
+- [Backend Architecture & Data Access Layer](./docs/BACKEND.md)
+- *(Frontend documentation coming soon)*

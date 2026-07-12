@@ -7,6 +7,7 @@ import type {
   AssetAllocation,
   Prisma,
 } from "@prisma/client";
+import { createNotification } from "./notification.actions";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -116,6 +117,26 @@ export async function allocateAsset(
         },
       },
     });
+
+    if (data.employeeId) {
+      await createNotification({
+        userId: data.employeeId,
+        type: "ASSET_ASSIGNED",
+        title: "Asset Assigned",
+        message: `You have been allocated the asset: ${allocation.asset.name} (${allocation.asset.assetTag}).`,
+        relatedEntityType: "AssetAllocation",
+        relatedEntityId: allocation.id,
+      });
+    } else if (data.departmentId && allocation.department?.departmentHeadId) {
+      await createNotification({
+        userId: allocation.department.departmentHeadId,
+        type: "ASSET_ASSIGNED",
+        title: "Department Asset Allocated",
+        message: `Asset ${allocation.asset.name} (${allocation.asset.assetTag}) has been allocated to your department.`,
+        relatedEntityType: "AssetAllocation",
+        relatedEntityId: allocation.id,
+      });
+    }
 
     return { success: true, data: allocation };
   } catch (error) {

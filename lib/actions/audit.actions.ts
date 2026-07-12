@@ -3,6 +3,7 @@
 import { db } from "@/lib/db";
 import { requireSession, requireRole } from "@/lib/auth-utils";
 import type { AuditScopeType, AuditItemResult } from "@prisma/client";
+import { createNotification } from "./notification.actions";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -176,6 +177,17 @@ export async function assignAuditors(
         metadata: { auditorIds, count: records.count },
       },
     });
+
+    for (const auditorId of auditorIds) {
+      await createNotification({
+        userId: auditorId,
+        type: "AUDIT_ASSIGNED",
+        title: "Assigned to Audit Cycle",
+        message: `You have been assigned as an auditor for the audit cycle: ${cycle.name}.`,
+        relatedEntityType: "AuditCycle",
+        relatedEntityId: cycle.id,
+      });
+    }
 
     return { success: true, data: { assignedCount: records.count } };
   } catch (error) {
